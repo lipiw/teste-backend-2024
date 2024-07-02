@@ -7,7 +7,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"encoding/json"
+
 	"github.com/gin-gonic/gin"
+	"github.com/segmentio/kafka-go"
 )
 
 func IndexProducts(c *gin.Context) {
@@ -66,6 +69,40 @@ func CreateProducts(c *gin.Context) {
 			return
 		}
 	}
+
+	var (
+		kafkaBrokers = []string{"kafka:29092"}
+		topic        = "go-to-rails"
+	)
+
+	message, err := json.Marshal(product)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	// Configuração do produtor Kafka
+	config := kafka.WriterConfig{
+		Brokers: kafkaBrokers,
+		Topic:   topic,
+	}
+
+	writer := kafka.NewWriter(config)
+
+	// Escreve a mensagem no Kafka
+	err = writer.WriteMessages(c, kafka.Message{
+		Value: message,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Erro ao enviar para Kafka",
+			"error":   err.Error(),
+		})
+	}
+
+	writer.Close()
 	c.JSON(http.StatusCreated, gin.H{"data": product})
 }
 

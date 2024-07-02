@@ -37,6 +37,8 @@ Isso inicializará os seguintes containers:
 - `kafdrop-1`: Interface para Kafka
 - `zookeeper-1`: Sistema de Servidor
 
+![image](https://github.com/lipiw/teste-backend-2024/assets/47393970/d29c7f98-bb1c-4488-97a0-3f16aa9f315a)
+
 ## Como Testar
 
 1. Utilize o Postman ou Insomnia.
@@ -48,3 +50,5 @@ Serão criados dois projetos (ms-rails e ms-go), ambos com as seguintes funciona
 - `show`: Exibir um produto
 - `create`: Criar um produto
 - `update`: Atualizar um produto
+
+![image](https://github.com/lipiw/teste-backend-2024/assets/47393970/37a453da-9a1b-4569-9cdb-fa316e100af4)

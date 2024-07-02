@@ -13,15 +13,18 @@ import (
 )
 
 func Create(data models.Product, isAPI bool) (*models.Product, error) {
+	collection := db.Connection()
 
 	if data.ID == 0 {
 		var max models.Product
 
-		opts := options.FindOne()
+		opts := options.FindOne().SetSort(bson.D{{Key: "created_at", Value: -1}})
 
-		opts.SetSort(bson.D{{Key: "created_at", Value: -1}})
+		err := collection.FindOne(context.TODO(), bson.D{}, opts).Decode(&max)
 
-		db.Connection().FindOne(context.TODO(), bson.D{}, opts).Decode(&max)
+		if err != nil && err.Error() != "mongo: no documents in result" {
+			return nil, &helpers.GenericError{Msg: "Error fetching max ID", Code: http.StatusInternalServerError}
+		}
 
 		data.ID = max.ID + 1
 	}
@@ -33,16 +36,30 @@ func Create(data models.Product, isAPI bool) (*models.Product, error) {
 	data.CreatedAt = time.Now()
 	data.UpdatedAt = data.CreatedAt
 
-	_, err := db.Connection().InsertOne(context.TODO(), data)
+	var product models.Product
 
-	if err != nil {
-		return nil, &helpers.GenericError{Msg: err.Error(), Code: http.StatusInternalServerError}
+	err := collection.FindOne(context.TODO(), bson.M{"id": data.ID}).Decode(&product)
+
+	if err == nil {
+		if isAPI {
+			return nil, &helpers.GenericError{Msg: "Produto já existe", Code: http.StatusConflict}
+		} else {
+			setUpdate(&data, &product)
+
+			updateResult := collection.FindOneAndUpdate(context.TODO(), bson.M{"id": data.ID}, bson.M{"$set": data})
+			
+			if updateResult.Err() != nil {
+				return nil, &helpers.GenericError{Msg: updateResult.Err().Error(), Code: http.StatusInternalServerError}
+			}
+		}
+	} else {
+		_, err := collection.InsertOne(context.TODO(), data)
+		if err != nil {
+			return nil, &helpers.GenericError{Msg: err.Error(), Code: http.StatusInternalServerError}
+		}
 	}
 
 	defer db.Disconnect()
-
-	if isAPI {
-	}
 
 	return &data, nil
 }

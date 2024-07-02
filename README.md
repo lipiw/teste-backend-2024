@@ -1,44 +1,50 @@
-# Teste iCasei: Backend Júnior/Pleno
-Esta aplicação é um sistema de cadastro de produtos que mantém e sincroniza dados em duas bases de dados distintas usando mensageria (Kafka).
+# Teste Back-end
 
-## Instruções
-- Faça um fork deste projeto para sua conta pessoal do GitHub.
-- Siga as especificações abaixo.
-- Envie o link do repositório para o e-mail backend@icasei.com.br com o título Teste Backend Júnior/Pleno
-- Utilizar Insomnia para teste da aplicação (Insomnia_teste_backend.json)
+## Descrição do Projeto
 
-## Especificações Técnicas
+O Teste Back-end é um projeto de gerenciamento de produtos que permite criar, ler, atualizar e excluir produtos. Ele é composto por duas APIs (Go e Ruby on Rails), um sistema de mensagens (Kafka) e dois bancos de dados (SQLite e MongoDB).
 
-### Ajustes na Aplicação Rails
-1. Adicione um novo campo de estoque no SQLite.
-2. O novo campo deve aceitar apenas números.
-3. Ajuste a mensageria ('rails-to-go') com o novo campo.
-4. Crie um consumidor da mensageria do projeto em Golang ('go-to-rails').
-5. O consumidor deve criar e realizar a atualização no banco.
+## Pré-requisitos
 
-### Ajustes na Aplicação Golang
-1. Adicione um novo campo de estoque no MongoDB.
-2. O novo campo deve aceitar apenas números.
-3. Crie a mensageria ('go-to-rails').
-4. Crie um consumidor da mensageria do projeto em Rails ('rails-to-go').
-5. O consumidor deve criar e realizar a atualização no banco.
-
-
-*Nota: Existe uma "falha" que caso não seja tratada, as mensageria podem entrar em loop.
-
-## Resultado Final Esperado
-Ao realizar um POST/PATCH através da aplicação RAILS, o dado deve ser salvo no banco de dados (SQLite) e gerar uma mensageria com os dados do produto. A aplicação em Golang deve consumir esses dados enviados através da mensageria, criar ou alterar o registro em seu banco de dados (Mongo). O mesmo processo deve ocorrer na aplicação em Golang, ao realizar um POST/PATCH deve realizar o disparo de uma mensageria para aplicação RAILS que irá atualizar ou criar o registro.
-
-## O que será avaliado?
-- Funcionamento
-- Organização do projeto
-- Lógica do código
-- Uso do Git
-- Uso de componentização
-- Testes unitários
-
-## É obrigatório utilizar:
-- Arquitetura de microserviços com APIs RESTFUL
-- Banco de dados relacional e no-sql
-- Ferramenta de mensageria
 - Docker
+- Git
+
+## Como Iniciar o Projeto
+
+1. Clone o repositório no seu ambiente local:
+    ```sh
+    git clone <URL_DO_REPOSITORIO>
+    cd <NOME_DO_REPOSITORIO>
+    ```
+
+2. Construa as imagens do Docker:
+    ```sh
+    docker-compose build
+    ```
+
+3. Inicie os containers:
+    ```sh
+    docker-compose up
+    ```
+
+Isso inicializará os seguintes containers:
+
+- `ms_rails_app`: API Rails
+- `ms_go_app`: API Go
+- `mongo`: Banco de dados MongoDB
+- `mongo-express-1`: Interface para MongoDB
+- `kafka`: Sistema de mensagens Kafka
+- `kafdrop-1`: Interface para Kafka
+- `zookeeper-1`: Sistema de Servidor
+
+## Como Testar
+
+1. Utilize o Postman ou Insomnia.
+2. Importe o arquivo `Insomnia_teste_backend.json`.
+
+Serão criados dois projetos (ms-rails e ms-go), ambos com as seguintes funcionalidades:
+
+- `index`: Listar produtos
+- `show`: Exibir um produto
+- `create`: Criar um produto
+- `update`: Atualizar um produto

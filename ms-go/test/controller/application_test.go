@@ -2,50 +2,38 @@ package controller
 
 import (
 	"encoding/json"
+	"log"
 	"ms-go/router"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/likexian/gokit/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIndexHome(t *testing.T) {
-
-	// Build our expected body
-	body := gin.H{
+	expectedBody := gin.H{
 		"message": "[ms-go] | Success",
-		"status":  200,
+		"status":  http.StatusOK,
 	}
 
-	// Grab our router
-	router := router.SetupRouter()
+	r := router.SetupRouter()
 
-	// Perform a GET request with that handler.
 	req, _ := http.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+	r.ServeHTTP(w, req)
 
-	// Assert we encoded correctly,
-
-	// the request gives a 200
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	// Convert the correct object response to a map
-	response := struct {
-		Data struct {
-			Api struct {
-				Status  int    `json:"status"`
-				Message string `json:"message"`
-			} `json:"api"`
-		} `json:"data"`
-	}{}
-
+	var response map[string]interface{}
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 
-	// Make some assertions on the correctness of the response.
 	assert.Nil(t, err)
-	assert.Equal(t, body["message"], response.Data.Api.Message)
 
+	log.Printf("Expected message: %s", expectedBody["message"])
+	log.Printf("Response message: %s", response["message"])
+
+	assert.Equal(t, expectedBody["message"], response["message"])
+	assert.Equal(t, expectedBody["status"], int(response["status"].(float64)))
 }

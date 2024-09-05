@@ -1,8 +1,8 @@
-# Teste Back-end
+# Back-end Ruby/Go
 
 ## Descrição do Projeto
 
-O Teste Back-end é um projeto de gerenciamento de produtos que permite criar, ler, atualizar e excluir produtos. Ele é composto por duas APIs (Go e Ruby on Rails), um sistema de mensagens (Kafka) e dois bancos de dados (SQLite e MongoDB).
+O Back-end Ruby/Go é um projeto de gerenciamento de produtos que permite criar, ler, atualizar e excluir produtos. Ele é composto por duas APIs (Go e Ruby on Rails), um sistema de mensagens (Kafka) e dois bancos de dados (SQLite e MongoDB).
 
 ## Pré-requisitos
 
